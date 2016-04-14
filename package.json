@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "next-tick": "^0.2.2",
+    "readable-stream": "^2.1.0",
     "request": "^2.60.0",
     "stream-parser": "~0.3.1"
   },
