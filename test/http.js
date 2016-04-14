@@ -24,6 +24,7 @@ describe('probeHttp', function () {
     });
   });
 
+
   it('should process an image', function (callback) {
     responder = function (req, res) {
       res.writeHead(200);
@@ -41,6 +42,24 @@ describe('probeHttp', function () {
       assert.equal(size.mime, 'image/gif');
 
       callback();
+    });
+  });
+
+
+  it('Promise: should process an image', function () {
+    responder = function (req, res) {
+      res.writeHead(200);
+
+      // 1x1 transparent gif
+      res.write(new Buffer('R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==', 'base64'));
+
+      // response never ends
+    };
+
+    return probe(url).then(function (size) {
+      assert.equal(size.width, 1);
+      assert.equal(size.height, 1);
+      assert.equal(size.mime, 'image/gif');
     });
   });
 
@@ -64,6 +83,7 @@ describe('probeHttp', function () {
     });
   });
 
+
   it('should fail on 404', function (callback) {
     responder = function (req, res) {
       res.writeHead(404);
@@ -78,11 +98,22 @@ describe('probeHttp', function () {
     });
   });
 
+
   it('should return error if url is invalid', function (callback) {
     probe('badurl', function (err) {
       assert(err.message.match(/Invalid URI/));
 
       callback();
     });
+  });
+
+
+  it('Promise: should return error if url is invalid', function () {
+    return probe('badurl')
+      .then(function () {
+        throw new Error('should fail');
+      }, function (err) {
+        assert(err.message.match(/Invalid URI/));
+      });
   });
 });
